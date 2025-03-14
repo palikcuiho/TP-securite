@@ -6,5 +6,6 @@ namespace ArticlesAPI.Data
     public class ArticleDbContext(DbContextOptions<ArticleDbContext> options) : DbContext(options)
     {
         public DbSet<Article> Articles { get; set; }
+        //public DbSet<User> Users { get; set; }
     }
 }

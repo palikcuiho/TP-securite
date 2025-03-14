@@ -22,6 +22,7 @@ builder
             };
     });
 builder.Services.AddScoped<IArticleService, ArticleService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IArticleRepository, ArticleRepository>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

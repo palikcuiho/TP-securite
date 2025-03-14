@@ -1,4 +1,5 @@
-﻿using ArticlesAPI.Models;
+﻿using ArticlesAPI.DTO;
+using ArticlesAPI.Models;
 using ArticlesAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,26 +8,61 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ArticlesAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/user/articles")]
     [Authorize(Roles = "Admin,User")]
     [ApiController]
     public class UserController : ControllerBase
     {
         private readonly IArticleService _articleService;
-        private User _currentUser;
+        private readonly IUserService _userService;
 
-        public UserController(IArticleService articleService)
+        public UserController(IArticleService articleService, IUserService userService)
         {
             _articleService = articleService;
+            _userService = userService;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Article>>> GetArticles()
         {
+            var currentUser = _userService.GetCurrentUser(Request);
             var articles = await _articleService.GetAll(a =>
-                a.IsPublished == true || a.Author == _currentUser
+                a.IsPublished == true || a.Author == currentUser.UserName
             );
             return Ok(articles);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Article>>> GetById(int id)
+        {
+            try
+            {
+                var currentUser = _userService.GetCurrentUser(Request);
+                var articles = await _articleService.Get(a =>
+                    a.Id == id && (a.IsPublished == true || a.Author == currentUser.UserName)
+                );
+                return Ok(articles);
+            }
+            catch (Exception ex)
+            {
+                return Problem(detail: ex.GetBaseException().Message);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] ArticlePostDTO body)
+        {
+            try
+            {
+                var currentUser = _userService.GetCurrentUser(Request);
+                var article = await _articleService.Add(body, currentUser);
+
+                return CreatedAtAction(nameof(GetById), new { article.Id }, article);
+            }
+            catch (Exception ex)
+            {
+                return Problem(detail: ex.GetBaseException().Message);
+            }
         }
     }
 }

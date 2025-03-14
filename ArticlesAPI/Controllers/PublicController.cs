@@ -4,16 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ArticlesAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/public/articles")]
     [ApiController]
-    public class PublicController : ControllerBase
+    public class PublicController(IArticleService articleService) : ControllerBase
     {
-        private readonly IArticleService _articleService;
-
-        public PublicController(IArticleService articleService)
-        {
-            _articleService = articleService;
-        }
+        private readonly IArticleService _articleService = articleService;
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Article>>> GetArticles()

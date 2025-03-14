@@ -37,5 +37,10 @@ namespace ArticlesAPI.Repositories
         {
             throw new NotImplementedException();
         }
+
+        public Task<Article?> Get(Expression<Func<Article, bool>> predicate)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
