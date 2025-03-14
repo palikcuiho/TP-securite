@@ -1,0 +1,42 @@
+name: TP-securite
+services:
+  articles-api:
+    image: ${DOCKER_REGISTRY-}articlesapi
+    build:
+      context: .
+      dockerfile: ArticlesAPI/Dockerfile
+
+  identity-server:
+    image: ${DOCKER_REGISTRY-}identityserver
+    build:
+      context: .
+      dockerfile: IdentityServer/Dockerfile
+
+  postgres-identity:
+    image: postgres:17
+    restart: always
+    environment:
+      POSTGRES_DB: identitydb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-identity-data:/var/lib/postgresql/data
+
+  postgres-articles:
+    image: postgres:17
+    restart: always
+    environment:
+      POSTGRES_DB: articlesdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres-articles-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-identity-data:
+  postgres-articles-data:
+
