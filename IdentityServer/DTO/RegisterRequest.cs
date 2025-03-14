@@ -19,6 +19,6 @@ namespace IdentityServer.DTO
         public string Password { get; set; } = password;
 
         [EnumDataType(typeof(Role))]
-        public string Role { get; set; } = role;
+        public string? Role { get; set; } = role;
     }
 }

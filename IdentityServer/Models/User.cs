@@ -26,8 +26,8 @@ namespace IdentityServer.Models
 
     public enum Role
     {
+        User = 0,
         Admin,
-        User,
         Guest,
     }
 }

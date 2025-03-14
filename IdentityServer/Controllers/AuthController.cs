@@ -21,13 +21,15 @@ namespace IdentityServer.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
+            request.Role = request.Role ?? "User";
+
             var result = await _authservice.RegisterUser(request);
             if (!result.Succeeded)
             {
                 return BadRequest(result.Errors);
             }
-
             await _roleService.AssignRole(request.Email, request.Role);
+
             return Ok(request);
         }
 

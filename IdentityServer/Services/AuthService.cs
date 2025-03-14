@@ -56,10 +56,8 @@ namespace IdentityServer.Services
             if (!result.Succeeded)
             {
                 await _userManager.AccessFailedAsync(user);
-                if (
-                    await _userManager.GetAccessFailedCountAsync(user)
-                    >= _identityServerConfiguration.LockoutThreshold
-                )
+                var attempts = await _userManager.GetAccessFailedCountAsync(user);
+                if (attempts >= _identityServerConfiguration.LockoutThreshold)
                 {
                     await _userManager.SetLockoutEndDateAsync(
                         user,
@@ -71,7 +69,9 @@ namespace IdentityServer.Services
                         "Account locked due to multiple failed login attempts. Try again later."
                     );
                 }
-                return new TokenResponse("Invalid credentials");
+                return new TokenResponse(
+                    $"Invalid credentials ({_identityServerConfiguration.LockoutThreshold - attempts} attempts remaining)"
+                );
             }
 
             await _userManager.ResetAccessFailedCountAsync(user);
